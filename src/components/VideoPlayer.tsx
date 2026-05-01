@@ -3,13 +3,22 @@ interface VideoPlayerProps {
   title: string
 }
 
-// V1: placeholder. V2: Bunny.net iframe (or HLS.js for direct streaming).
+function toEmbedUrl(src: string): string {
+  if (/youtube\.com\/embed\//.test(src)) return src
+  const short = src.match(/youtu\.be\/([\w-]+)/)
+  if (short) return `https://www.youtube.com/embed/${short[1]}`
+  const watch = src.match(/youtube\.com\/watch\?v=([\w-]+)/)
+  if (watch) return `https://www.youtube.com/embed/${watch[1]}`
+  return src
+}
+
+// V1: YouTube embed via iframe. V2: Bunny.net Stream when DRM is wired up.
 export function VideoPlayer({ src, title }: VideoPlayerProps) {
   if (src) {
     return (
       <div className="aspect-video w-full bg-ink-900 border border-ink-800">
         <iframe
-          src={src}
+          src={toEmbedUrl(src)}
           title={title}
           className="w-full h-full"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
@@ -26,7 +35,7 @@ export function VideoPlayer({ src, title }: VideoPlayerProps) {
           Video
         </p>
         <p className="text-bone-muted text-sm">
-          Footage drops here once Bunny.net is wired up.
+          Footage drops here once the URL is set on this lesson.
         </p>
       </div>
     </div>
