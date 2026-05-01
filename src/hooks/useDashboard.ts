@@ -142,6 +142,7 @@ export function useDashboard(): UseQueryResult<DashboardView, Error> {
     queryKey: ['dashboard', userId],
     queryFn: () => fetchDashboard(userId!),
     enabled: Boolean(userId),
-    staleTime: 60_000,
+    staleTime: 0,
+    refetchOnMount: 'always',
   })
 }
