@@ -26,6 +26,19 @@ function asOptionalString(value: unknown): string | null {
   return trimmed.length > 0 ? trimmed : null
 }
 
+// Stricter parser for Klaviyo profile IDs. Klaviyo's flow templating can send
+// the literal string "None", "null", an empty string, or an unresolved
+// template like "{{ person.id }}" when the property is missing. Any of those
+// must be treated as absent or the downstream API call will fail.
+function asKlaviyoProfileId(value: unknown): string | null {
+  const s = asOptionalString(value)
+  if (!s) return null
+  const lower = s.toLowerCase()
+  if (lower === 'none' || lower === 'null' || lower === 'undefined') return null
+  if (/^\{\{.*\}\}$/.test(s)) return null
+  return s
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return preflight()
   if (req.method !== 'POST') return jsonResponse({ error: 'method_not_allowed' }, 405)
@@ -48,10 +61,12 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: 'invalid_json' }, 400)
   }
 
+  console.log('Webhook body received:', JSON.stringify(body))
+
   const email = normalizeEmail(body.email)
   if (!email) return jsonResponse({ error: 'invalid_email' }, 400)
 
-  const klaviyoProfileId = asOptionalString(body.klaviyo_profile_id)
+  const klaviyoProfileId = asKlaviyoProfileId(body.klaviyo_profile_id)
   const firstName = asOptionalString(body.first_name)
   const lastName = asOptionalString(body.last_name)
   const source = asOptionalString(body.source) ?? 'klaviyo'
@@ -96,11 +111,15 @@ Deno.serve(async (req) => {
   if (klaviyoProfileId) {
     try {
       await pushToKlaviyo(klaviyoProfileId, magicLink, expiresAt)
+      console.log('klaviyo profile update succeeded for id', klaviyoProfileId)
     } catch (err) {
       console.error('klaviyo profile update failed', err)
     }
   } else {
-    console.warn('klaviyo_profile_id missing, skipping Klaviyo profile update')
+    console.warn(
+      'Missing klaviyo_profile_id, skipping Klaviyo profile update. Raw value was:',
+      JSON.stringify(body.klaviyo_profile_id),
+    )
   }
 
   return jsonResponse({ magic_link: magicLink, expires_at: expiresAt }, 200)
