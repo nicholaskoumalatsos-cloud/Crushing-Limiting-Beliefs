@@ -1,8 +1,8 @@
 export function Landing() {
   return (
     <main className="min-h-screen flex items-center justify-center px-6">
-      <div className="max-w-2xl text-center">
-        <p className="text-accent text-xs tracking-widest uppercase mb-6">
+      <div className="max-w-3xl text-center">
+        <p className="font-display text-accent text-4xl md:text-5xl tracking-wider uppercase mb-10 leading-tight">
           Crushing Limiting Beliefs
         </p>
         <h1 className="text-5xl md:text-6xl mb-6 leading-tight">
