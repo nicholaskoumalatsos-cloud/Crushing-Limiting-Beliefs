@@ -8,6 +8,7 @@ Schema migrations, Edge Functions, and config for the Crushing Limiting Beliefs 
 supabase/functions/
   _shared/             helpers used by multiple functions
   generate-magic-link/ creates auth user (if needed) and a one-time token
+  redeem-magic-link/   validates a token and mints a Supabase session
   deno.json            Deno fmt/lint config for the functions folder
 ```
 
@@ -70,3 +71,40 @@ Error codes (HTTP status, `error` field):
 - 401 `unauthorized` (bad or missing `x-webhook-secret`)
 - 405 `method_not_allowed`
 - 500 `server_misconfigured`, `user_provisioning_failed`, `token_create_failed`
+
+### redeem-magic-link
+
+`POST <project>.supabase.co/functions/v1/redeem-magic-link`
+
+Called by the browser on `/start`. No webhook secret (the token itself is
+the credential, single-use, 7 day expiry).
+
+Body:
+```json
+{ "token": "<base64url token from the magic link>" }
+```
+
+Response (success):
+```json
+{
+  "token_hash": "<supabase verifyOtp token>",
+  "type": "magiclink",
+  "email": "user@example.com"
+}
+```
+
+The frontend then runs:
+```ts
+await supabase.auth.verifyOtp({ type: 'magiclink', token_hash })
+```
+which lands an authenticated session in the browser.
+
+Behavior:
+- Atomically claims the token by setting `used_at` only if the row is unused and unexpired.
+- Auto-enrolls the user in the seeded `crushing-limiting-beliefs` course on first redemption (idempotent).
+- Mints a Supabase magic-link `token_hash` via the Auth Admin API.
+
+Error codes:
+- 400 `invalid_json`, `invalid_token`, `token_invalid_or_expired`
+- 405 `method_not_allowed`
+- 500 `server_misconfigured`, `redemption_failed`, `profile_missing`, `session_create_failed`
