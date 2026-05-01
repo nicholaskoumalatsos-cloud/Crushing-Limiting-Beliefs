@@ -6,6 +6,7 @@ import { Landing } from '@/pages/Landing'
 import { Start } from '@/pages/Start'
 import { Login } from '@/pages/Login'
 import { Dashboard } from '@/pages/Dashboard'
+import { Lesson } from '@/pages/Lesson'
 import { NotFound } from '@/pages/NotFound'
 
 export default function App() {
@@ -21,6 +22,14 @@ export default function App() {
             element={
               <RequireAuth>
                 <Dashboard />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/lessons/:slug"
+            element={
+              <RequireAuth>
+                <Lesson />
               </RequireAuth>
             }
           />
