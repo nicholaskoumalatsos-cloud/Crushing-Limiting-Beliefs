@@ -66,8 +66,6 @@ export function Lesson() {
             </div>
           )}
 
-          <AgogeCTA />
-
           <LessonActions
             lesson={data}
             onComplete={() => {
@@ -75,6 +73,8 @@ export function Lesson() {
               else navigate('/dashboard')
             }}
           />
+
+          <AgogeCTA />
         </article>
       </div>
     </main>
