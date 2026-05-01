@@ -8,7 +8,10 @@ import { useLesson, type LessonDetail } from '@/hooks/useLesson'
 import { useMarkLesson } from '@/hooks/useLessonProgress'
 import { AgogeCTA } from '@/components/AgogeCTA'
 import { VideoPlayer } from '@/components/VideoPlayer'
+import { Quiz } from '@/components/Quiz'
 import { ArrowRightIcon } from '@/components/icons'
+
+const QUIZ_SLUG = 'crushing-limiting-beliefs-quiz'
 
 export function Lesson() {
   const { slug } = useParams<{ slug: string }>()
@@ -54,15 +57,23 @@ export function Lesson() {
             </p>
           )}
 
-          <div className="mb-12">
-            <VideoPlayer src={data.videoUrl} title={data.title} />
-          </div>
+          {data.videoUrl && (
+            <div className="mb-12">
+              <VideoPlayer src={data.videoUrl} title={data.title} />
+            </div>
+          )}
 
           {data.bodyContent && (
             <div className="prose prose-manifesto max-w-none mb-12">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {data.bodyContent}
               </ReactMarkdown>
+            </div>
+          )}
+
+          {data.slug === QUIZ_SLUG && (
+            <div className="mb-12">
+              <Quiz />
             </div>
           )}
 
