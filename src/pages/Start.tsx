@@ -80,7 +80,7 @@ export function Start() {
 function Loading({ label }: { label: string }) {
   return (
     <div>
-      <p className="text-accent text-xs tracking-widest uppercase mb-6">
+      <p className="font-display text-accent text-sm md:text-base tracking-widest uppercase mb-6">
         Crushing Limiting Beliefs
       </p>
       <h1 className="text-3xl mb-8">{label}</h1>
@@ -124,7 +124,7 @@ function ErrorView({ code }: { code: string }) {
   }
   return (
     <div>
-      <p className="text-accent text-xs tracking-widest uppercase mb-6">Error</p>
+      <p className="font-display text-accent text-sm md:text-base tracking-widest uppercase mb-6">Error</p>
       <h1 className="text-3xl mb-4">{copy.title}</h1>
       <p className="text-bone-muted mb-8 leading-relaxed">{copy.body}</p>
       <p className="text-bone-muted text-sm">

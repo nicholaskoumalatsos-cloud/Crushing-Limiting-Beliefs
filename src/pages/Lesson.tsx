@@ -40,14 +40,14 @@ export function Lesson() {
         <div className="mt-10">
           <Link
             to="/dashboard"
-            className="font-display text-bone-muted hover:text-bone text-xs tracking-widest uppercase transition-colors"
+            className="font-display text-bone-muted hover:text-bone text-sm tracking-widest uppercase transition-colors"
           >
             ← Back to dashboard
           </Link>
         </div>
 
         <article className="mt-8">
-          <p className="font-display text-accent text-xs tracking-widest uppercase mb-4">
+          <p className="font-display text-accent text-sm md:text-base tracking-widest uppercase mb-4">
             {data.moduleTitle}
           </p>
           <h1 className="text-4xl md:text-5xl mb-6 leading-tight">{data.title}</h1>
@@ -152,11 +152,11 @@ function Header({ email, onSignOut }: { email: string; onSignOut: () => void }) 
     <header className="flex items-center justify-between">
       <Link
         to="/dashboard"
-        className="font-display text-accent text-xs md:text-sm tracking-widest uppercase hover:text-accent-hover transition-colors"
+        className="font-display text-accent text-sm md:text-base tracking-widest uppercase hover:text-accent-hover transition-colors"
       >
         Crushing Limiting Beliefs
       </Link>
-      <div className="flex items-center gap-4 text-xs">
+      <div className="flex items-center gap-4 text-sm">
         {email && <span className="text-bone-muted hidden sm:inline">{email}</span>}
         <button
           type="button"
@@ -184,14 +184,14 @@ function LessonLocked({ lesson }: { lesson: LessonDetail }) {
   return (
     <main className="min-h-screen flex items-center justify-center px-6">
       <div className="max-w-md text-center">
-        <p className="font-display text-accent text-xs tracking-widest uppercase mb-6">
+        <p className="font-display text-accent text-sm md:text-base tracking-widest uppercase mb-6">
           Locked
         </p>
         <h1 className="text-3xl mb-4">{lesson.title}</h1>
         <p className="text-bone-muted leading-relaxed mb-2">
           This lesson is part of the drip schedule.
         </p>
-        <p className="font-display text-bone text-sm tracking-widest uppercase mb-8">
+        <p className="font-display text-bone text-base tracking-widest uppercase mb-8">
           Unlocks day {lesson.unlockDay + 1}
         </p>
         <Link to="/dashboard" className="btn-ghost">
@@ -206,7 +206,7 @@ function LessonError({ message }: { message?: string }) {
   return (
     <main className="min-h-screen flex items-center justify-center px-6">
       <div className="max-w-md text-center">
-        <p className="font-display text-accent text-xs tracking-widest uppercase mb-4">
+        <p className="font-display text-accent text-sm md:text-base tracking-widest uppercase mb-4">
           Error
         </p>
         <h1 className="text-3xl mb-4">Could not load this lesson.</h1>

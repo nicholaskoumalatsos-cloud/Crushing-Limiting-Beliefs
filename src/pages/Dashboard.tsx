@@ -28,7 +28,7 @@ export function Dashboard() {
         <Header email={session?.user.email ?? ''} onSignOut={signOut} />
 
         <section className="mt-12 md:mt-16">
-          <p className="font-display text-bone-muted text-xs tracking-widest uppercase mb-4">
+          <p className="font-display text-bone-muted text-sm md:text-base tracking-widest uppercase mb-4">
             Day {daysIn + 1} of your training
           </p>
           <h1 className="text-4xl md:text-6xl mb-6 leading-tight">{courseTitle}</h1>
@@ -53,10 +53,10 @@ export function Dashboard() {
 function Header({ email, onSignOut }: { email: string; onSignOut: () => void }) {
   return (
     <header className="flex items-center justify-between">
-      <p className="font-display text-accent text-xs md:text-sm tracking-widest uppercase">
+      <p className="font-display text-accent text-sm md:text-base tracking-widest uppercase">
         Crushing Limiting Beliefs
       </p>
-      <div className="flex items-center gap-4 text-xs">
+      <div className="flex items-center gap-4 text-sm">
         {email && <span className="text-bone-muted hidden sm:inline">{email}</span>}
         <button
           type="button"
@@ -74,7 +74,7 @@ function ProgressLine({ completed, total }: { completed: number; total: number }
   const pct = total > 0 ? Math.round((completed / total) * 100) : 0
   return (
     <div>
-      <div className="flex items-center justify-between font-display text-bone-muted text-xs tracking-widest uppercase mb-2">
+      <div className="flex items-center justify-between font-display text-bone-muted text-sm tracking-widest uppercase mb-2">
         <span>Progress</span>
         <span>
           {completed} / {total}
@@ -142,7 +142,7 @@ function LessonRow({ lesson }: { lesson: LessonView }) {
           </p>
         )}
         {isLocked && (
-          <p className="font-display text-accent/70 text-xs tracking-widest uppercase mt-2">
+          <p className="font-display text-accent/70 text-sm tracking-widest uppercase mt-2">
             Unlocks day {lesson.unlockDay + 1}
           </p>
         )}
@@ -184,7 +184,7 @@ function DashboardError({ message }: { message?: string }) {
   return (
     <main className="min-h-screen flex items-center justify-center px-6">
       <div className="max-w-md text-center">
-        <p className="font-display text-accent text-xs tracking-widest uppercase mb-4">
+        <p className="font-display text-accent text-sm md:text-base tracking-widest uppercase mb-4">
           Error
         </p>
         <h1 className="text-3xl mb-4">Could not load your course.</h1>

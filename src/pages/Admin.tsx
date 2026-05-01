@@ -18,7 +18,7 @@ export function Admin() {
         <Header email={session?.user.email ?? ''} onSignOut={signOut} />
 
         <div className="mt-12 md:mt-16">
-          <p className="font-display text-accent text-xs tracking-widest uppercase mb-4">
+          <p className="font-display text-accent text-sm md:text-base tracking-widest uppercase mb-4">
             Admin
           </p>
           <h1 className="text-4xl md:text-5xl mb-4 leading-tight">The Funnel</h1>
@@ -36,7 +36,7 @@ export function Admin() {
 
         {isError && (
           <div className="mt-12 border border-accent/40 bg-ink-900 px-6 py-6">
-            <p className="font-display text-accent text-xs tracking-widest uppercase mb-2">
+            <p className="font-display text-accent text-sm md:text-base tracking-widest uppercase mb-2">
               Error
             </p>
             <p className="text-bone-muted leading-relaxed">
@@ -67,11 +67,11 @@ function Header({ email, onSignOut }: { email: string; onSignOut: () => void }) 
     <header className="flex items-center justify-between">
       <Link
         to="/dashboard"
-        className="font-display text-accent text-xs md:text-sm tracking-widest uppercase hover:text-accent-hover transition-colors"
+        className="font-display text-accent text-sm md:text-base tracking-widest uppercase hover:text-accent-hover transition-colors"
       >
         Crushing Limiting Beliefs
       </Link>
-      <div className="flex items-center gap-4 text-xs">
+      <div className="flex items-center gap-4 text-sm">
         {email && <span className="text-bone-muted hidden sm:inline">{email}</span>}
         <Link
           to="/dashboard"
@@ -120,7 +120,7 @@ function StatGrid({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-ink-900 px-6 py-8">
-      <p className="font-display text-bone-muted text-xs tracking-widest uppercase mb-3">
+      <p className="font-display text-bone-muted text-sm md:text-base tracking-widest uppercase mb-3">
         {label}
       </p>
       <p className="font-display text-3xl md:text-4xl tracking-wider">{value}</p>
@@ -179,7 +179,7 @@ function Th({
 }) {
   return (
     <th
-      className={`font-display text-bone-muted text-xs tracking-widest uppercase text-left px-4 py-3 ${className}`}
+      className={`font-display text-bone-muted text-sm tracking-widest uppercase text-left px-4 py-3 ${className}`}
     >
       {children}
     </th>
@@ -208,7 +208,7 @@ function FunnelRow({
 
   return (
     <tr className="border-b border-ink-800 last:border-b-0 hover:bg-ink-900 transition-colors">
-      <td className="px-4 py-3 font-display text-bone-muted text-xs tracking-widest">
+      <td className="px-4 py-3 font-display text-bone-muted text-sm tracking-widest">
         {String(row.moduleIndex).padStart(2, '0')}.{row.lessonIndexInModule}
       </td>
       <td className="px-4 py-3 text-bone">{row.lessonTitle}</td>

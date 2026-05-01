@@ -82,7 +82,7 @@ export function AgogeCTA({
         aria-hidden="true"
         className="absolute inset-y-0 right-0 w-px bg-ink-800"
       />
-      <p className="font-display text-accent text-xs tracking-widest uppercase mb-5">
+      <p className="font-display text-accent text-sm md:text-base tracking-widest uppercase mb-5">
         The Agoge
       </p>
       <h3 className="font-display text-3xl md:text-4xl tracking-wider uppercase mb-5 leading-[1.15]">

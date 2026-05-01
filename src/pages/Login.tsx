@@ -65,7 +65,7 @@ function DevLogin({ secret }: { secret: string }) {
 
   return (
     <div className="mt-16 pt-10 border-t border-ink-800">
-      <p className="font-display text-bone-muted text-xs tracking-widest uppercase mb-4">
+      <p className="font-display text-bone-muted text-sm md:text-base tracking-widest uppercase mb-4">
         Dev login
       </p>
       <p className="text-bone-muted text-sm mb-6">

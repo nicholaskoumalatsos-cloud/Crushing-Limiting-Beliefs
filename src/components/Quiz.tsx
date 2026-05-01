@@ -152,7 +152,7 @@ export function Quiz() {
     <section className="not-prose">
       {submitted && (
         <div className="mb-12 border-l-4 border-accent bg-ink-900 px-6 py-8 md:px-10 md:py-10">
-          <p className="font-display text-accent text-xs tracking-widest uppercase mb-3">
+          <p className="font-display text-accent text-sm md:text-base tracking-widest uppercase mb-3">
             Score
           </p>
           <h2 className="font-display text-4xl md:text-5xl tracking-wider uppercase mb-4 leading-tight">
@@ -169,7 +169,7 @@ export function Quiz() {
           const userPick = answers[i]
           return (
             <li key={i}>
-              <p className="font-display text-bone-muted text-xs tracking-widest uppercase mb-2">
+              <p className="font-display text-bone-muted text-sm md:text-base tracking-widest uppercase mb-2">
                 Question {String(i + 1).padStart(2, '0')}
               </p>
               <h3 className="font-display text-xl md:text-2xl tracking-wider uppercase mb-5 leading-snug">
@@ -216,7 +216,7 @@ export function Quiz() {
                 })}
               </div>
               {submitted && userPick !== q.answer && (
-                <p className="font-display text-accent/80 text-xs tracking-widest uppercase mt-3">
+                <p className="font-display text-accent/80 text-sm tracking-widest uppercase mt-3">
                   Correct answer: {q.answer}
                 </p>
               )}
@@ -236,7 +236,7 @@ export function Quiz() {
             >
               Submit answers
             </button>
-            <p className="font-display text-bone-muted text-xs tracking-widest uppercase">
+            <p className="font-display text-bone-muted text-sm tracking-widest uppercase">
               {Object.keys(answers).length} of {QUESTIONS.length} answered
             </p>
           </>
