@@ -20,12 +20,29 @@ export interface RedeemResponse {
   email: string
 }
 
+export interface GenerateResponse {
+  magic_link: string
+  expires_at: string
+}
+
+export interface GenerateInput {
+  email: string
+  first_name?: string
+  last_name?: string
+  klaviyo_profile_id?: string
+  source?: string
+}
+
 interface ApiErrorPayload {
   error?: string
   details?: string
 }
 
-async function postJson<T>(path: string, body: unknown): Promise<T> {
+async function postJson<T>(
+  path: string,
+  body: unknown,
+  extraHeaders: Record<string, string> = {},
+): Promise<T> {
   let res: Response
   try {
     res = await fetch(`${FUNCTIONS_BASE}/${path}`, {
@@ -33,6 +50,7 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
       headers: {
         'Content-Type': 'application/json',
         apikey: env.supabaseAnonKey,
+        ...extraHeaders,
       },
       body: JSON.stringify(body),
     })
@@ -55,4 +73,15 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
 
 export function redeemMagicLink(token: string): Promise<RedeemResponse> {
   return postJson<RedeemResponse>('redeem-magic-link', { token })
+}
+
+export function generateMagicLink(
+  input: GenerateInput,
+  webhookSecret: string,
+): Promise<GenerateResponse> {
+  return postJson<GenerateResponse>(
+    'generate-magic-link',
+    { source: 'dev_login', ...input },
+    { 'x-webhook-secret': webhookSecret },
+  )
 }
