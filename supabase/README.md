@@ -23,7 +23,8 @@ supabase link --project-ref <your-project-ref>
 supabase secrets set \
   SUPABASE_SERVICE_ROLE_KEY=<service-role-key> \
   SITE_URL=https://course.crushyourlimitingbeliefs.com \
-  WEBHOOK_SECRET=<random-shared-secret-for-klaviyo>
+  WEBHOOK_SECRET=<random-shared-secret-for-klaviyo> \
+  KLAVIYO_PRIVATE_API_KEY=<klaviyo-private-key>
 
 # Deploy a function
 supabase functions deploy generate-magic-link --no-verify-jwt
@@ -65,6 +66,14 @@ Behavior:
 - If the user already exists, updates the profile metadata in place.
 - Always inserts a fresh one-time token with a 7 day TTL.
 - Tokens are 32 bytes of crypto randomness, base64url encoded.
+- If `klaviyo_profile_id` is provided AND `KLAVIYO_PRIVATE_API_KEY` is set,
+  the function PATCHes the Klaviyo profile to set
+  `properties.magic_link` and `properties.magic_link_expires_at` so the
+  email template can render `{{ person.magic_link }}`. The PATCH is awaited
+  so downstream Klaviyo flow steps do not race the property update.
+- Klaviyo PATCH failures are logged but do not fail the response, since
+  the link is already persisted on our side and is recoverable manually.
+- If `klaviyo_profile_id` is missing, the Klaviyo PATCH is skipped (warning).
 
 Error codes (HTTP status, `error` field):
 - 400 `invalid_json`, `invalid_email`

@@ -7,6 +7,8 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 const SITE_URL = (Deno.env.get('SITE_URL') ?? 'https://course.crushyourlimitingbeliefs.com').replace(/\/$/, '')
 const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET') ?? ''
+const KLAVIYO_API_KEY = Deno.env.get('KLAVIYO_PRIVATE_API_KEY') ?? ''
+const KLAVIYO_REVISION = '2024-10-15'
 
 const TOKEN_TTL_DAYS = 7
 
@@ -85,6 +87,21 @@ Deno.serve(async (req) => {
 
   const magicLink =
     `${SITE_URL}/start?token=${token}&email=${encodeURIComponent(email)}`
+
+  // Push the link onto the Klaviyo profile so the welcome email can render
+  // {{ person.magic_link }}. We await it so the email step in the Klaviyo
+  // flow does not race with this update. Failures here do not fail the
+  // overall response: the link is already persisted on our side and a
+  // manual recovery is possible.
+  if (klaviyoProfileId) {
+    try {
+      await pushToKlaviyo(klaviyoProfileId, magicLink, expiresAt)
+    } catch (err) {
+      console.error('klaviyo profile update failed', err)
+    }
+  } else {
+    console.warn('klaviyo_profile_id missing, skipping Klaviyo profile update')
+  }
 
   return jsonResponse({ magic_link: magicLink, expires_at: expiresAt }, 200)
 })
@@ -167,4 +184,37 @@ function stripNulls<T extends Record<string, unknown>>(obj: T): Record<string, u
     if (v !== null && v !== undefined) out[k] = v
   }
   return out
+}
+
+async function pushToKlaviyo(profileId: string, magicLink: string, expiresAt: string): Promise<void> {
+  if (!KLAVIYO_API_KEY) {
+    throw new Error('KLAVIYO_PRIVATE_API_KEY not set')
+  }
+
+  const res = await fetch(`https://a.klaviyo.com/api/profiles/${profileId}/`, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
+      'revision': KLAVIYO_REVISION,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      data: {
+        type: 'profile',
+        id: profileId,
+        attributes: {
+          properties: {
+            magic_link: magicLink,
+            magic_link_expires_at: expiresAt,
+          },
+        },
+      },
+    }),
+  })
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(`klaviyo_api_${res.status}: ${text.slice(0, 500)}`)
+  }
 }
