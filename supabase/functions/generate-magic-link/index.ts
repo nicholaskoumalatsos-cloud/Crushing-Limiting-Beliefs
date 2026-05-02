@@ -40,6 +40,14 @@ function asKlaviyoProfileId(value: unknown): string | null {
 }
 
 Deno.serve(async (req) => {
+  console.log('Incoming request:', JSON.stringify({
+    method: req.method,
+    url: req.url,
+    has_webhook_secret_header: req.headers.has('x-webhook-secret'),
+    content_type: req.headers.get('content-type'),
+    user_agent: req.headers.get('user-agent'),
+  }))
+
   if (req.method === 'OPTIONS') return preflight()
   if (req.method !== 'POST') return jsonResponse({ error: 'method_not_allowed' }, 405)
 
@@ -50,6 +58,10 @@ Deno.serve(async (req) => {
   if (WEBHOOK_SECRET) {
     const provided = req.headers.get('x-webhook-secret')
     if (provided !== WEBHOOK_SECRET) {
+      console.warn('webhook secret mismatch', {
+        provided_length: provided?.length ?? 0,
+        expected_length: WEBHOOK_SECRET.length,
+      })
       return jsonResponse({ error: 'unauthorized' }, 401)
     }
   }
