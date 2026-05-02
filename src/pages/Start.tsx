@@ -104,8 +104,8 @@ const ERROR_COPY: Record<string, { title: string; body: string }> = {
     body: 'The token in your URL looks malformed. Open the most recent welcome email and click that link instead.',
   },
   token_invalid_or_expired: {
-    title: 'This link is no good.',
-    body: 'It was already used, or it expired. Each link works once and lasts seven days.',
+    title: 'This link expired.',
+    body: 'Magic links last seven days. Submit the form again to get a fresh one.',
   },
   verify_failed: {
     title: 'Could not authenticate.',

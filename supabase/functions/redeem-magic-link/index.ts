@@ -36,13 +36,15 @@ Deno.serve(async (req) => {
 
   const nowIso = new Date().toISOString()
 
-  // Atomic claim: only succeed if the token is unused and unexpired.
-  // The single UPDATE prevents double-redemption races.
+  // Validate the token is still within its 7-day window. Bumps used_at so
+  // we can see when it was most recently redeemed, but does not require
+  // used_at to be null. The link works any number of times until it
+  // expires, so a user who closes their browser and clicks again still
+  // gets in without needing a fresh email.
   const { data: claimed, error: claimErr } = await admin
     .from('magic_tokens')
     .update({ used_at: nowIso })
     .eq('token', submittedToken)
-    .is('used_at', null)
     .gt('expires_at', nowIso)
     .select('email')
     .maybeSingle()
