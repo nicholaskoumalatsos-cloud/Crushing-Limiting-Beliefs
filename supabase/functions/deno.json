@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.unstable", "dom"],
+    "strict": true
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "semiColons": false,
+    "singleQuote": true
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  }
+}
