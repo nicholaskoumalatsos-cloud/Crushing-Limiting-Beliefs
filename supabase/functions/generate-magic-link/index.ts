@@ -120,18 +120,28 @@ Deno.serve(async (req) => {
   // flow does not race with this update. Failures here do not fail the
   // overall response: the link is already persisted on our side and a
   // manual recovery is possible.
-  if (klaviyoProfileId) {
+  let resolvedProfileId = klaviyoProfileId
+  if (!resolvedProfileId) {
+    console.warn(
+      'klaviyo_profile_id missing or unresolved (raw value was',
+      JSON.stringify(body.klaviyo_profile_id) +
+        '), falling back to lookup by email',
+    )
+    resolvedProfileId = await findKlaviyoProfileByEmail(email)
+    if (resolvedProfileId) {
+      console.log('found klaviyo profile via email lookup:', resolvedProfileId)
+    }
+  }
+
+  if (resolvedProfileId) {
     try {
-      await pushToKlaviyo(klaviyoProfileId, magicLink, expiresAt)
-      console.log('klaviyo profile update succeeded for id', klaviyoProfileId)
+      await pushToKlaviyo(resolvedProfileId, magicLink, expiresAt)
+      console.log('klaviyo profile update succeeded for id', resolvedProfileId)
     } catch (err) {
       console.error('klaviyo profile update failed', err)
     }
   } else {
-    console.warn(
-      'Missing klaviyo_profile_id, skipping Klaviyo profile update. Raw value was:',
-      JSON.stringify(body.klaviyo_profile_id),
-    )
+    console.warn('no klaviyo profile id available, skipping update')
   }
 
   return jsonResponse({ magic_link: magicLink, expires_at: expiresAt }, 200)
@@ -215,6 +225,37 @@ function stripNulls<T extends Record<string, unknown>>(obj: T): Record<string, u
     if (v !== null && v !== undefined) out[k] = v
   }
   return out
+}
+
+async function findKlaviyoProfileByEmail(email: string): Promise<string | null> {
+  if (!KLAVIYO_API_KEY) {
+    console.warn('KLAVIYO_PRIVATE_API_KEY not set, cannot look up profile by email')
+    return null
+  }
+
+  const filter = encodeURIComponent(`equals(email,"${email}")`)
+  const url = `https://a.klaviyo.com/api/profiles/?filter=${filter}`
+
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
+        'revision': KLAVIYO_REVISION,
+        'Accept': 'application/json',
+      },
+    })
+    if (!res.ok) {
+      const text = await res.text().catch(() => '')
+      console.error(`klaviyo profile lookup ${res.status}: ${text.slice(0, 300)}`)
+      return null
+    }
+    const data = await res.json()
+    const id = data?.data?.[0]?.id
+    return typeof id === 'string' && id.length > 0 ? id : null
+  } catch (err) {
+    console.error('klaviyo profile lookup threw', err)
+    return null
+  }
 }
 
 async function pushToKlaviyo(profileId: string, magicLink: string, expiresAt: string): Promise<void> {
